@@ -12,39 +12,47 @@ import streamlit as st
      conn.commit()
 
      # Dersleri yükle
-     with open("dersler.json", "r") as f:
-         dersler = json.load(f)
+     try:
+         with open("dersler.json", "r") as f:
+             dersler = json.load(f)
+     except FileNotFoundError:
+         st.error("dersler.json dosyası bulunamadı!")
+         st.stop()
 
-     st.title("Fromizmir AI Storyteller")
-     st.write("Generate stories from English lessons, solve quizzes, and share!")
+     st.title("Fromizmir AI Hikaye Anlatıcısı")
+     st.write("İngilizce derslerden hikayeler üret, quiz çöz ve X'te paylaş! 🇬🇧")
 
      # Ders seçimi
      ders_options = {ders["title"]: ders for ders in dersler}
-     selected_ders = st.selectbox("Choose a lesson:", list(ders_options.keys()))
+     selected_ders = st.selectbox("Bir İngilizce dersi seç:", list(ders_options.keys()))
 
-     if st.button("Generate Story"):
+     if st.button("Hikaye Üret"):
          ders = ders_options[selected_ders]
          ders_id = ders["id"]
          ders_summary = ders["summary"]
 
          # AI ile hikaye üret
-         generator = pipeline("text-generation", model="distilgpt2")
-         prompt = f"A short English story based on {selected_ders}: {ders_summary}"
-         hikaye = generator(prompt, max_length=100, num_return_sequences=1)[0]["generated_text"]
-         st.write("### Story")
+         with st.spinner("Hikaye üretiliyor..."):
+             generator = pipeline("text-generation", model="distilgpt2")
+             prompt = f"A short English story based on {selected_ders}: {ders_summary}"
+             hikaye = generator(prompt, max_length=100, num_return_sequences=1)[0]["generated_text"]
+         st.subheader("Hikaye")
          st.write(hikaye)
 
          # Seslendirme
-         engine = pyttsx3.init()
-         engine.setProperty("voice", "english")  # İngilizce ses
-         audio_file = "story.mp3"
-         engine.save_to_file(hikaye, audio_file)
-         engine.runAndWait()
+         with st.spinner("Seslendirme hazırlanıyor..."):
+             engine = pyttsx3.init()
+             engine.setProperty("voice", "english")  # İngilizce ses
+             audio_file = "story.mp3"
+             engine.save_to_file(hikaye, audio_file)
+             engine.runAndWait()
          if os.path.exists(audio_file):
              st.audio(audio_file)
+         else:
+             st.warning("Ses dosyası oluşturulamadı.")
 
          # Quiz
-         st.write("### Quiz")
+         st.subheader("Quiz")
          quizler = {
              "Present Simple": {
                  "soru": "What is the correct form? She ___ (go) to school every day.",
@@ -103,13 +111,13 @@ import streamlit as st
              "doğru_cevap": "Answer A"
          })
          cevap = st.radio(quiz["soru"], quiz["cevaplar"])
-         if st.button("Check Answer"):
+         if st.button("Cevabı Kontrol Et"):
              score = 1 if cevap == quiz["doğru_cevap"] else 0
              c.execute("INSERT INTO results (user_id, ders_id, score) VALUES (?, ?, ?)", ("user1", ders_id, score))
              conn.commit()
-             st.write(f"Correct answer: {quiz['doğru_cevap']}. Your score: {score}")
+             st.write(f"Doğru cevap: {quiz['doğru_cevap']}. Puanın: {score}")
 
-         # X paylaşımı (dummy buton, X API sonra eklenecek)
-         st.button("Share on X", help="Share your story on X!")
+         # X paylaşımı (dummy buton)
+         st.button("X'te Paylaş", help="Hikayeni X'te paylaş!")
 
      conn.close()
