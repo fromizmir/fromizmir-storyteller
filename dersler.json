@@ -1,0 +1,12 @@
+[
+       {"id": 1, "title": "Present Simple", "summary": "Used for habits, routines, and facts."},
+       {"id": 2, "title": "Past Simple", "summary": "Describes completed actions in the past."},
+       {"id": 3, "title": "English Idioms", "summary": "Common expressions like 'break the ice'."},
+       {"id": 4, "title": "Modal Verbs", "summary": "Can, could, should, must, etc."},
+       {"id": 5, "title": "Vocabulary", "summary": "Words for daily life, travel, and work."},
+       {"id": 6, "title": "Conditional Sentences", "summary": "If clauses for hypothetical situations."},
+       {"id": 7, "title": "Articles", "summary": "Use of a, an, the in sentences."},
+       {"id": 8, "title": "Adjectives and Adverbs", "summary": "Describing words and their usage."},
+       {"id": 9, "title": "Passive Voice", "summary": "Sentences where subject receives action."},
+       {"id": 10, "title": "Questions", "summary": "Forming yes/no and wh- questions."}
+     ]
